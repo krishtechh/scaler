@@ -125,7 +125,7 @@ random.shuffle(dataset)
 
 #save csv
 with open("data/prompts.csv", "w", newline='', encoding='utf-8') as f:
-    writer = csv.writer(f)
+    writer = csv.writer(f, quoting=csv.QUOTE_ALL)
     writer.writerow(["prompt", "label", "attack_type"])
     writer.writerows(dataset)
 
