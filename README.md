@@ -94,8 +94,8 @@ We made the model better by looking at its mistakes and adding examples to the d
 # Highlights
 -This is a real-world machine learning project
 -We used learning with BERT
--We made a big dataset
--We looked at the models mistakes. Made it better
+-We made a big dataset(more than 7000 prompts)
+-We looked at the models mistakes and improved them
 -We have a working application
 -The project is ready to be shared on GitHub
 
