@@ -152,3 +152,13 @@ def baseline(task: str = 'easy', seed: int = 42, episode_length: int = 50):
 @app.get('/health')
 def health():
     return {'status': 'ok'}
+
+@app.get('/')
+def root():
+    return {
+        'name': 'LLM Safeguard Environment',
+        'version': '0.1.0',
+        'docs': '/docs',
+        'health': '/health',
+        'tasks': '/tasks',
+    }
