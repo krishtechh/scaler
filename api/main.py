@@ -1,5 +1,5 @@
 """FastAPI application exposing the OpenEnv LLM Safeguard Environment."""
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Body
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional
@@ -73,8 +73,10 @@ def predict_prompt(payload: PredictRequest):
     }
 
 @app.post('/reset', response_model=Observation)
-def reset(payload: ResetRequest):
-    """Start a new episode. Returns the first Observation."""
+def reset(payload: Optional[ResetRequest] = Body(default=None)):
+    """Start a new episode. Returns the first Observation. Body is optional — defaults to task=easy, seed=42."""
+    if payload is None:
+        payload = ResetRequest()
     obs = env.reset(seed=payload.seed, task=payload.task, episode_length=payload.episode_length)
     return obs
 
