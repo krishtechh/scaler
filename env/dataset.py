@@ -3,8 +3,12 @@ import pandas as pd
 import random
 from typing import List, Dict
 
-# Resolve path relative to this file so it works from any CWD
-_DATA_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'prompts.csv')
+# Resolve path relative to this package so it works from any CWD
+_PKGD_PATH = os.path.normpath(os.path.join(os.path.dirname(__file__), '..', 'data', 'prompts.csv'))
+# Fallback for local development or simple Docker environments
+_CWD_PATH = os.path.normpath(os.path.join(os.getcwd(), 'data', 'prompts.csv'))
+
+_DATA_PATH = _PKGD_PATH if os.path.exists(_PKGD_PATH) else _CWD_PATH
 
 try:
     DF = pd.read_csv(_DATA_PATH)
