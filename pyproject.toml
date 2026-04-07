@@ -34,7 +34,7 @@ Repository = "https://huggingface.co/spaces/Manan0p/llm-safeguard-env"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["env*", "api*", "graders*", "tasks*", "baseline*", "server*"]
+include = ["env*", "api*", "graders*", "tasks*", "baseline*", "server*", "data*"]
 
 [project.scripts]
 server = "server.app:main"
