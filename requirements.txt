@@ -25,3 +25,14 @@ six==1.17.0
 threadpoolctl==3.6.0
 tqdm==4.67.3
 Werkzeug==3.1.5
+fastapi>=0.115.0
+uvicorn>=0.34.0
+pydantic>=2.0.0
+torch>=2.0.0
+transformers>=4.0.0
+accelerate>=1.1.0
+python-dotenv>=1.0.0
+openenv>=0.1.0
+openai>=1.0.0
+pytest>=8.0.0
+httpx>=0.27.0

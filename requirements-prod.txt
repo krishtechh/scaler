@@ -1,0 +1,26 @@
+# Production dependencies for Hugging Face Spaces deployment
+# NOTE: torch/transformers are intentionally excluded to stay within 2vCPU/8GB RAM limits.
+# The API uses the lightweight sklearn model (model.pkl + vectorizer.pkl) for inference.
+
+# Core API
+fastapi>=0.115.0
+uvicorn[standard]>=0.34.0
+pydantic>=2.0.0
+
+# ML baseline (lightweight sklearn)
+scikit-learn>=1.8.0
+joblib>=1.5.0
+numpy>=1.24.0
+pandas>=1.5.0
+
+# OpenEnv interface
+openenv>=0.1.0
+
+# LLM inference (for inference.py evaluation script)
+openai>=1.0.0
+
+# Env file loading
+python-dotenv>=1.0.0
+
+# Utilities
+tqdm>=4.65.0

@@ -1,8 +1,14 @@
 venv/
+.venv/
 __pycache__/
 *.pyc
 .DS_Store
 .ipynb_checkpoints
 
+# Secrets — never push to HF Spaces
+.env
+
+# Heavy model training files (not needed for deployment)
 models/bert_model/
+bert_train*.py
 results/
