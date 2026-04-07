@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "llm-safeguard-env"
+version = "0.1.0"
+description = "OpenEnv-compliant LLM prompt injection safety environment"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.9"
+keywords = ["openenv", "llm", "safety", "reinforcement-learning", "prompt-injection"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.34.0",
+    "pydantic>=2.0.0",
+    "scikit-learn>=1.8.0",
+    "joblib>=1.5.0",
+    "numpy>=1.24.0",
+    "pandas>=1.5.0",
+    "openenv>=0.1.0",
+    "openai>=1.0.0",
+    "python-dotenv>=1.0.0",
+    "tqdm>=4.65.0",
+]
+
+[project.urls]
+Homepage = "https://huggingface.co/spaces/Manan0p/llm-safeguard-env"
+Repository = "https://huggingface.co/spaces/Manan0p/llm-safeguard-env"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["env*", "api*", "graders*", "tasks*", "baseline*"]
+
+[openenv]
+name = "llm-safeguard-env"
+version = "0.1.0"
+entrypoint = "api.main:app"
+tasks = ["easy", "medium", "hard"]
