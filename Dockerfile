@@ -18,8 +18,8 @@ RUN pip install --no-cache-dir --upgrade pip && \
 # Copy the rest of the project
 COPY . /app
 
-# Perform an editable install of the environment itself
-RUN pip install --no-cache-dir -e .
+# Install the package itself (multi-mode setup)
+RUN pip install --no-cache-dir .
 
 # HF Spaces maps external port 7860
 EXPOSE 7860
