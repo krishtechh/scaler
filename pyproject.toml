@@ -37,7 +37,7 @@ where = ["."]
 include = ["env*", "api*", "graders*", "tasks*", "baseline*", "server*"]
 
 [project.scripts]
-server = "server.app:app"
+server = "server.app:main"
 
 [openenv]
 name = "llm-safeguard-env"
