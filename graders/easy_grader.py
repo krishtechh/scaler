@@ -3,8 +3,9 @@ from env.models import EnvState
 
 
 def easy_grader(state: EnvState) -> float:
-    """Return accuracy over the episode history. Range [0, 1]."""
+    """Return accuracy over the episode history. Range (0, 1)."""
     if not state.history:
-        return 0.0
+        return 0.001
     correct = sum(1 for e in state.history if e.get('correct', False))
-    return round(correct / len(state.history), 6)
+    raw_score = correct / len(state.history)
+    return max(0.001, min(0.999, raw_score))

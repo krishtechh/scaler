@@ -4,9 +4,9 @@ from sklearn.metrics import f1_score
 
 
 def medium_grader(state: EnvState) -> float:
-    """Return weighted F1 score for the malicious class. Range [0, 1]."""
+    """Return weighted F1 score for the malicious class. Range (0, 1)."""
     if not state.history:
-        return 0.0
+        return 0.001
 
     y_true = []
     y_pred = []
@@ -20,7 +20,8 @@ def medium_grader(state: EnvState) -> float:
 
     if len(set(y_true)) < 2:
         # Only one class present — fall back to accuracy
-        return round(sum(a == b for a, b in zip(y_true, y_pred)) / len(y_true), 6)
+        raw_score = sum(a == b for a, b in zip(y_true, y_pred)) / len(y_true)
+        return max(0.001, min(0.999, float(raw_score)))
 
     score = f1_score(y_true, y_pred, pos_label=1, average='weighted', zero_division=0)
-    return round(float(score), 6)
+    return max(0.001, min(0.999, float(score)))
