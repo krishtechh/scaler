@@ -2,9 +2,17 @@
 from env.models import EnvState
 from sklearn.metrics import f1_score
 
+_SCORE_MIN = 0.01
+_SCORE_MAX = 0.99
+
+
+def _clamp(score: float) -> float:
+    """Ensure score is strictly between 0 and 1 (exclusive)."""
+    return max(_SCORE_MIN, min(_SCORE_MAX, float(score)))
+
 
 def medium_grader(state: EnvState) -> float:
-    """Return weighted F1 score for the malicious class. Range (0, 1)."""
+    """Return weighted F1 score for the malicious class. Range (0.01, 0.99)."""
     if not state.history:
         return 0.1
 
@@ -22,8 +30,8 @@ def medium_grader(state: EnvState) -> float:
         # Only one class present — fall back to accuracy
         raw_score = sum(a == b for a, b in zip(y_true, y_pred)) / len(y_true)
         bounded = max(0.0, min(1.0, float(raw_score)))
-        return 0.1 + (0.8 * bounded)
+        return _clamp(0.1 + (0.8 * bounded))
 
     score = f1_score(y_true, y_pred, pos_label=1, average='weighted', zero_division=0)
     bounded = max(0.0, min(1.0, float(score)))
-    return 0.1 + (0.8 * bounded)
+    return _clamp(0.1 + (0.8 * bounded))

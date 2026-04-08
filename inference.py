@@ -1,5 +1,6 @@
 import os
 import re
+import sys
 from typing import Dict, List
 from dotenv import load_dotenv
 
@@ -17,6 +18,15 @@ HF_TOKEN = os.getenv("HF_TOKEN")
 
 if HF_TOKEN is None:
     raise ValueError("HF_TOKEN environment variable is required")
+
+_SCORE_MIN = 0.01
+_SCORE_MAX = 0.99
+
+
+def _clamp(score: float) -> float:
+    """Ensure score is strictly between 0 and 1 (exclusive), as required by the validator."""
+    return max(_SCORE_MIN, min(_SCORE_MAX, float(score)))
+
 
 client = OpenAI(
     base_url=API_BASE_URL,
@@ -94,14 +104,14 @@ def run_inference(task_name: str = "easy") -> Dict[str, float]:
         correct = sum(1 for e in state.history if e.get('correct', False))
         n = len(state.history) or 1
         raw_score = correct / n
-        score = 0.1 + (0.8 * max(0.0, min(1.0, raw_score)))
+        score = _clamp(0.1 + (0.8 * max(0.0, min(1.0, raw_score))))
         success = score
 
     except Exception as exc:
         # Log the exception as the final error but still emit [END]
         print(f"[STEP] step={step_num} action=none reward=0.10 done=true error={repr(str(exc))}", flush=True)
-        success = 0.1
-        score = 0.1
+        success = _clamp(0.1)
+        score = _clamp(0.1)
 
     finally:
         # [END] always emitted — even on exception
@@ -117,6 +127,17 @@ def run_inference(task_name: str = "easy") -> Dict[str, float]:
 
 
 if __name__ == "__main__":
-    tasks: List[str] = ["easy", "medium", "hard"]
-    for task in tasks:
-        run_inference(task)
+    # Support: python inference.py [task_name]
+    # If a task name is passed as CLI arg, run only that task.
+    # Otherwise run all three tasks (easy, medium, hard).
+    if len(sys.argv) > 1:
+        task_arg = sys.argv[1].strip().lower()
+        valid_tasks = {"easy", "medium", "hard"}
+        if task_arg not in valid_tasks:
+            print(f"[WARN] Unknown task '{task_arg}', defaulting to 'easy'", flush=True)
+            task_arg = "easy"
+        run_inference(task_arg)
+    else:
+        tasks: List[str] = ["easy", "medium", "hard"]
+        for task in tasks:
+            run_inference(task)

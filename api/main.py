@@ -4,6 +4,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional
 
+_SCORE_MIN = 0.01
+_SCORE_MAX = 0.99
+
+
+def _clamp(score: float) -> float:
+    """Ensure score is strictly between 0 and 1 (exclusive), as required by the validator."""
+    return max(_SCORE_MIN, min(_SCORE_MAX, float(score)))
+
 import sys, os
 # Ensure project root is on path when running uvicorn from inside api/
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
@@ -124,7 +132,7 @@ def grader():
     if not state.task_id:
         return {
             'task': 'easy',
-            'score': 0.5,
+            'score': _clamp(0.5),
             'steps': 0,
             'history_length': 0,
         }
@@ -133,7 +141,7 @@ def grader():
     if grader_fn is None:
         return {
             'task': state.task_id,
-            'score': 0.5,
+            'score': _clamp(0.5),
             'steps': state.index,
             'history_length': len(state.history),
         }
@@ -141,7 +149,7 @@ def grader():
     score = grader_fn(state)
     return {
         'task': state.task_id,
-        'score': max(0.1, min(0.9, float(score))),
+        'score': _clamp(score),
         'steps': state.index,
         'history_length': len(state.history),
     }
