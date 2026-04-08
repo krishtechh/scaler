@@ -62,22 +62,32 @@ def test_state_is_reproducible(env):
 
 def test_compute_reward_malicious_block():
     r = compute_reward(Action(decision='block'), label=1, attack_type='prompt_extraction')
-    assert r > 0
+    assert 0.0 < r < 1.0
 
 
 def test_compute_reward_malicious_allow():
     r = compute_reward(Action(decision='allow'), label=1, attack_type='prompt_extraction')
-    assert r < 0
+    assert 0.0 < r < 1.0
 
 
 def test_compute_reward_benign_allow():
     r = compute_reward(Action(decision='allow'), label=0, attack_type='benign')
-    assert r > 0
+    assert 0.0 < r < 1.0
 
 
 def test_compute_reward_benign_block():
     r = compute_reward(Action(decision='block'), label=0, attack_type='benign')
-    assert r < 0
+    assert 0.0 < r < 1.0
+
+
+def test_reward_prefers_correct_actions():
+    malicious_block = compute_reward(Action(decision='block'), label=1, attack_type='prompt_extraction')
+    malicious_allow = compute_reward(Action(decision='allow'), label=1, attack_type='prompt_extraction')
+    benign_allow = compute_reward(Action(decision='allow'), label=0, attack_type='benign')
+    benign_block = compute_reward(Action(decision='block'), label=0, attack_type='benign')
+
+    assert malicious_block > malicious_allow
+    assert benign_allow > benign_block
 
 
 def test_step_before_reset_raises(env):
