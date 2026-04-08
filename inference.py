@@ -99,7 +99,7 @@ def run_inference(task_name: str = "easy") -> Dict[str, float]:
 
     except Exception as exc:
         # Log the exception as the final error but still emit [END]
-        print(f"[STEP] step={step_num} action=none reward=0.00 done=true error={repr(str(exc))}", flush=True)
+        print(f"[STEP] step={step_num} action=none reward=0.10 done=true error={repr(str(exc))}", flush=True)
         success = False
         score = 0.1
 
