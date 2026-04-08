@@ -19,8 +19,8 @@ HF_TOKEN = os.getenv("HF_TOKEN")
 if HF_TOKEN is None:
     raise ValueError("HF_TOKEN environment variable is required")
 
-_SCORE_MIN = 0.01
-_SCORE_MAX = 0.99
+_SCORE_MIN = 0.0001
+_SCORE_MAX = 0.9999
 
 
 def _clamp(score: float) -> float:
@@ -104,19 +104,19 @@ def run_inference(task_name: str = "easy") -> Dict[str, float]:
         correct = sum(1 for e in state.history if e.get('correct', False))
         n = len(state.history) or 1
         raw_score = correct / n
-        score = _clamp(0.1 + (0.8 * max(0.0, min(1.0, raw_score))))
+        score = _clamp(raw_score)
         success = score
 
     except Exception as exc:
         # Log the exception as the final error but still emit [END]
         print(f"[STEP] step={step_num} action=none reward=0.10 done=true error={repr(str(exc))}", flush=True)
-        success = _clamp(0.1)
-        score = _clamp(0.1)
+        success = _clamp(0.5)
+        score = _clamp(0.5)
 
     finally:
         # [END] always emitted — even on exception
-        success_str = f"{success:.2f}"
-        rewards_str = ",".join(f"{r:.2f}" for r in rewards_list)
+        success_str = f"{success:.4f}"
+        rewards_str = ",".join(f"{r:.4f}" for r in rewards_list)
         print(f"[END] success={success_str} steps={len(rewards_list)} rewards={rewards_str}", flush=True)
 
     return {

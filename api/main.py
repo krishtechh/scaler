@@ -4,8 +4,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional
 
-_SCORE_MIN = 0.01
-_SCORE_MAX = 0.99
+_SCORE_MIN = 0.0001
+_SCORE_MAX = 0.9999
 
 
 def _clamp(score: float) -> float:

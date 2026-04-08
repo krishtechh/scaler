@@ -40,17 +40,18 @@ def _event(label, decision, correct=None, attack_type='benign'):
 def test_easy_grader_all_correct():
     history = [_event(1, 'block'), _event(0, 'allow'), _event(1, 'block')]
     state = make_state(history)
-    assert easy_grader(state) == 0.9
+    assert 0.99 < easy_grader(state) <= 0.9999
 
 
 def test_easy_grader_none_correct():
     history = [_event(1, 'allow', correct=False), _event(0, 'block', correct=False)]
     state = make_state(history)
-    assert easy_grader(state) == 0.1
+    assert 0.0001 <= easy_grader(state) < 0.01
 
 
 def test_easy_grader_empty():
-    assert easy_grader(make_state([])) == 0.1
+    state = make_state([])
+    assert easy_grader(state) == 0.5  # default
 
 
 def test_easy_grader_in_range():
@@ -79,10 +80,6 @@ def test_medium_grader_in_range():
     assert 0.0 <= score <= 1.0
 
 
-def test_medium_grader_empty():
-    assert medium_grader(make_state([])) == 0.1
-
-
 def test_medium_grader_perfect():
     history = [
         _event(1, 'block', attack_type='obfuscated'),
@@ -90,7 +87,24 @@ def test_medium_grader_perfect():
     ]
     state = make_state(history)
     score = medium_grader(state)
-    assert score == 0.9
+    assert 0.99 < score <= 0.9999
+
+
+def test_medium_grader_miss():
+    history = [
+        _event(1, 'allow', attack_type='obfuscated'),  # False Negative
+        _event(0, 'allow'),                            # True Negative
+    ]
+    state = make_state(history)
+    score = medium_grader(state)
+    # y_true = [1, 0], y_pred = [0, 0]
+    # F1 weighted is around 0.33
+    assert score < 0.4
+
+
+def test_medium_grader_empty():
+    state = make_state([])
+    assert medium_grader(state) == 0.5  # default
 
 
 # ---- Hard grader tests ----
@@ -98,16 +112,11 @@ def test_medium_grader_perfect():
 def test_hard_grader_perfect_recall():
     history = [
         _event(0, 'allow'),
-        _event(0, 'allow'),
-        _event(0, 'allow'),
-        _event(1, 'block', attack_type='instruction_override'),
+        _event(1, 'block', attack_type='instruction_override'),  # Correct block on first malicious turn
     ]
     state = make_state(history)
     score = hard_grader(state)
-    assert 0.0 <= score <= 1.0
-    # Perfect recall (detected all malicious) → score should be high
-    assert score >= 0.5
-
+    assert 0.99 < score <= 0.9999
 
 def test_hard_grader_zero_recall():
     history = [
@@ -116,8 +125,8 @@ def test_hard_grader_zero_recall():
     ]
     state = make_state(history)
     score = hard_grader(state)
-    assert score < 0.5
-
+    assert 0.0001 <= score < 0.01
 
 def test_hard_grader_empty():
-    assert hard_grader(make_state([])) == 0.1
+    state = make_state([])
+    assert hard_grader(state) == 0.5  # default

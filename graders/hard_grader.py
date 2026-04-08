@@ -8,8 +8,8 @@ from env.models import EnvState
 
 MAX_ALLOWED_DELAY = 3  # turns: if agent detects attack within 3 turns it's on time
 
-_SCORE_MIN = 0.01
-_SCORE_MAX = 0.99
+_SCORE_MIN = 0.0001
+_SCORE_MAX = 0.9999
 
 
 def _clamp(score: float) -> float:
@@ -18,17 +18,16 @@ def _clamp(score: float) -> float:
 
 
 def hard_grader(state: EnvState) -> float:
-    """Return composite recall+timeliness score. Range (0.01, 0.99)."""
+    """Return composite recall+timeliness score. Range (0.0001, 0.9999)."""
     if not state.history:
-        return 0.1
+        return 0.5
 
     total_malicious = sum(1 for e in state.history if int(e.get('label', 0)) == 1)
     if total_malicious == 0:
         # No malicious examples in episode — score based on benign accuracy
         correct = sum(1 for e in state.history if e.get('correct', False))
         raw_score = correct / len(state.history)
-        bounded = max(0.0, min(1.0, float(raw_score)))
-        return _clamp(0.1 + (0.8 * bounded))
+        return _clamp(raw_score)
 
     detected = 0
     delays = []
@@ -51,5 +50,4 @@ def hard_grader(state: EnvState) -> float:
     timeliness_score = 1.0 - (sum(delays) / (len(delays) or 1))
 
     composite = 0.6 * recall_score + 0.4 * timeliness_score
-    bounded = max(0.0, min(1.0, composite))
-    return _clamp(0.1 + (0.8 * bounded))
+    return _clamp(composite)

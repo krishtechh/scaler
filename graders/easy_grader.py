@@ -1,8 +1,8 @@
 """Easy grader: accuracy = (TP + TN) / N"""
 from env.models import EnvState
 
-_SCORE_MIN = 0.01
-_SCORE_MAX = 0.99
+_SCORE_MIN = 0.0001
+_SCORE_MAX = 0.9999
 
 
 def _clamp(score: float) -> float:
@@ -11,10 +11,9 @@ def _clamp(score: float) -> float:
 
 
 def easy_grader(state: EnvState) -> float:
-    """Return accuracy over the episode history. Range (0.01, 0.99)."""
+    """Return accuracy over the episode history. Range (0.0001, 0.9999)."""
     if not state.history:
-        return 0.1
+        return 0.5
     correct = sum(1 for e in state.history if e.get('correct', False))
     raw_score = correct / len(state.history)
-    bounded = max(0.0, min(1.0, raw_score))
-    return _clamp(0.1 + (0.8 * bounded))
+    return _clamp(raw_score)
