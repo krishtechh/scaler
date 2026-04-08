@@ -104,9 +104,14 @@ def get_state():
 
 @app.get('/tasks')
 def get_tasks():
-    """List available tasks and their descriptions."""
+    """List available tasks and their descriptions and grader bindings."""
     return [
-        {'task_id': tid, 'description': desc}
+        {
+            'id': tid,
+            'task_id': tid,
+            'description': desc,
+            'grader': f'{tid}_grader',
+        }
         for tid, desc in TASK_DESCRIPTIONS.items()
     ]
 

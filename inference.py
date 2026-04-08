@@ -1,5 +1,6 @@
 import os
 import re
+from typing import Dict, List
 from dotenv import load_dotenv
 
 # Load .env variables locally (fails gracefully in Docker env injection)
@@ -59,17 +60,18 @@ def predict(prompt: str) -> Action:
     except Exception as e:
         return Action(decision='allow'), str(e)  # fail open/safe but track error
 
-def run_inference(task_name: str = "easy"):
+def run_inference(task_name: str = "easy") -> Dict[str, float]:
     # [START] task=<task_name> env=<benchmark> model=<model_name>
     print(f"[START] task={task_name} env=llm-safeguard model={MODEL_NAME}", flush=True)
 
-    env = LLMSafeguardEnv(episode_length=10)  # Fits within 2vCPU/8GB limit
+    env = LLMSafeguardEnv(episode_length=10)  # Keeps runtime low on 2vCPU/8GB infra
     obs = env.reset(seed=42, task=task_name)
     done = False
 
     rewards_list = []
     step_num = 1
     success = False
+    score = 0.001
 
     try:
         while not done:
@@ -91,12 +93,15 @@ def run_inference(task_name: str = "easy"):
         state = env.state()
         correct = sum(1 for e in state.history if e.get('correct', False))
         n = len(state.history) or 1
-        success = (correct / n) > 0.5
+        raw_score = correct / n
+        score = max(0.001, min(0.999, raw_score))
+        success = score > 0.5
 
     except Exception as exc:
         # Log the exception as the final error but still emit [END]
         print(f"[STEP] step={step_num} action=none reward=0.00 done=true error={repr(str(exc))}", flush=True)
         success = False
+        score = 0.001
 
     finally:
         # [END] always emitted — even on exception
@@ -104,6 +109,14 @@ def run_inference(task_name: str = "easy"):
         rewards_str = ",".join(f"{r:.2f}" for r in rewards_list)
         print(f"[END] success={success_str} steps={len(rewards_list)} rewards={rewards_str}", flush=True)
 
+    return {
+        "task": task_name,
+        "score": round(score, 4),
+        "steps": len(rewards_list),
+    }
+
 
 if __name__ == "__main__":
-    run_inference("easy")
+    tasks: List[str] = ["easy", "medium", "hard"]
+    for task in tasks:
+        run_inference(task)
