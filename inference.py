@@ -115,9 +115,10 @@ def run_inference(task_name: str = "easy") -> Dict[str, float]:
 
     finally:
         # [END] always emitted — even on exception
-        success_str = f"{success:.4f}"
-        rewards_str = ",".join(f"{r:.4f}" for r in rewards_list)
-        print(f"[END] success={success_str} steps={len(rewards_list)} rewards={rewards_str}", flush=True)
+        success_bool = str(score > 0.5).lower()
+        score_str = f"{score:.4f}"
+        rewards_str = ",".join(f"{r:.2f}" for r in rewards_list)
+        print(f"[END] success={success_bool} steps={len(rewards_list)} score={score_str} rewards={rewards_str}", flush=True)
 
     return {
         "task": task_name,
