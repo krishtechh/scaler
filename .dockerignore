@@ -1,0 +1,17 @@
+.git
+.venv
+venv
+__pycache__
+*.pyc
+.DS_Store
+.ipynb_checkpoints
+.env
+models/bert_model/
+bert_train*.py
+results/
+docker-compose.yml
+validate-submission.sh
+frontend/
+node_modules/
+dist/
+build/
