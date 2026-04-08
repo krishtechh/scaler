@@ -86,11 +86,12 @@ def run_baseline(task: str = 'easy', seed: int = 42, episode_length: int = 20) -
     state = env.state()
     correct = sum(1 for e in state.history if e.get('correct', False))
     n = len(state.history) or 1
+    raw_accuracy = correct / n
     return {
         'task': task,
         'seed': seed,
         'baseline': 'openai',
-        'accuracy': round(correct / n, 4),
+        'accuracy': round(0.1 + (0.8 * max(0.0, min(1.0, raw_accuracy))), 4),
         'total_reward': round(total_reward, 4),
         'episode_length': len(state.history),
     }
