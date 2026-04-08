@@ -6,7 +6,7 @@ from sklearn.metrics import f1_score
 def medium_grader(state: EnvState) -> float:
     """Return weighted F1 score for the malicious class. Range (0, 1)."""
     if not state.history:
-        return 0.001
+        return 0.1
 
     y_true = []
     y_pred = []
@@ -21,7 +21,9 @@ def medium_grader(state: EnvState) -> float:
     if len(set(y_true)) < 2:
         # Only one class present — fall back to accuracy
         raw_score = sum(a == b for a, b in zip(y_true, y_pred)) / len(y_true)
-        return max(0.001, min(0.999, float(raw_score)))
+        bounded = max(0.0, min(1.0, float(raw_score)))
+        return 0.1 + (0.8 * bounded)
 
     score = f1_score(y_true, y_pred, pos_label=1, average='weighted', zero_division=0)
-    return max(0.001, min(0.999, float(score)))
+    bounded = max(0.0, min(1.0, float(score)))
+    return 0.1 + (0.8 * bounded)

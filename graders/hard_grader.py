@@ -12,14 +12,15 @@ MAX_ALLOWED_DELAY = 3  # turns: if agent detects attack within 3 turns it's on t
 def hard_grader(state: EnvState) -> float:
     """Return composite recall+timeliness score. Range (0, 1)."""
     if not state.history:
-        return 0.001
+        return 0.1
 
     total_malicious = sum(1 for e in state.history if int(e.get('label', 0)) == 1)
     if total_malicious == 0:
         # No malicious examples in episode — score based on benign accuracy
         correct = sum(1 for e in state.history if e.get('correct', False))
         raw_score = correct / len(state.history)
-        return max(0.001, min(0.999, float(raw_score)))
+        bounded = max(0.0, min(1.0, float(raw_score)))
+        return 0.1 + (0.8 * bounded)
 
     detected = 0
     delays = []
@@ -43,4 +44,5 @@ def hard_grader(state: EnvState) -> float:
     timeliness_score = 1.0 - (sum(delays) / (len(delays) or 1))
 
     composite = 0.6 * recall_score + 0.4 * timeliness_score
-    return max(0.001, min(0.999, composite))
+    bounded = max(0.0, min(1.0, composite))
+    return 0.1 + (0.8 * bounded)

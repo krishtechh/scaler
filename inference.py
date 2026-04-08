@@ -71,7 +71,7 @@ def run_inference(task_name: str = "easy") -> Dict[str, float]:
     rewards_list = []
     step_num = 1
     success = False
-    score = 0.001
+    score = 0.1
 
     try:
         while not done:
@@ -94,14 +94,14 @@ def run_inference(task_name: str = "easy") -> Dict[str, float]:
         correct = sum(1 for e in state.history if e.get('correct', False))
         n = len(state.history) or 1
         raw_score = correct / n
-        score = max(0.001, min(0.999, raw_score))
+        score = 0.1 + (0.8 * max(0.0, min(1.0, raw_score)))
         success = score > 0.5
 
     except Exception as exc:
         # Log the exception as the final error but still emit [END]
         print(f"[STEP] step={step_num} action=none reward=0.00 done=true error={repr(str(exc))}", flush=True)
         success = False
-        score = 0.001
+        score = 0.1
 
     finally:
         # [END] always emitted — even on exception

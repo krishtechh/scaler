@@ -40,17 +40,17 @@ def _event(label, decision, correct=None, attack_type='benign'):
 def test_easy_grader_all_correct():
     history = [_event(1, 'block'), _event(0, 'allow'), _event(1, 'block')]
     state = make_state(history)
-    assert easy_grader(state) == 0.999
+    assert easy_grader(state) == 0.9
 
 
 def test_easy_grader_none_correct():
     history = [_event(1, 'allow', correct=False), _event(0, 'block', correct=False)]
     state = make_state(history)
-    assert easy_grader(state) == 0.001
+    assert easy_grader(state) == 0.1
 
 
 def test_easy_grader_empty():
-    assert easy_grader(make_state([])) == 0.001
+    assert easy_grader(make_state([])) == 0.1
 
 
 def test_easy_grader_in_range():
@@ -80,7 +80,7 @@ def test_medium_grader_in_range():
 
 
 def test_medium_grader_empty():
-    assert medium_grader(make_state([])) == 0.001
+    assert medium_grader(make_state([])) == 0.1
 
 
 def test_medium_grader_perfect():
@@ -90,7 +90,7 @@ def test_medium_grader_perfect():
     ]
     state = make_state(history)
     score = medium_grader(state)
-    assert score == 0.999
+    assert score == 0.9
 
 
 # ---- Hard grader tests ----
@@ -120,4 +120,4 @@ def test_hard_grader_zero_recall():
 
 
 def test_hard_grader_empty():
-    assert hard_grader(make_state([])) == 0.001
+    assert hard_grader(make_state([])) == 0.1
